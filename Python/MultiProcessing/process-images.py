@@ -1,5 +1,6 @@
 
 import time
+import os
 import concurrent.futures
 from PIL import Image, ImageFilter
 
@@ -27,13 +28,17 @@ size = (1200, 1200)
 
 
 def process_image(img_name):
-    img = Image.open(img_name)
+    try:
+        wspc = os.path.dirname(os.path.realpath(__file__))
+        print(wspc)
+        img = Image.open(f'{wspc}/{img_name}')
+        img = img.filter(ImageFilter.GaussianBlur(15))
 
-    img = img.filter(ImageFilter.GaussianBlur(15))
-
-    img.thumbnail(size)
-    img.save(f'processed/{img_name}')
-    print(f'{img_name} was processed...')
+        img.thumbnail(size)
+        img.save(f'{wspc}/processed/{img_name}')
+        print(f'{img_name} was processed...')
+    except Exception as e: 
+        print(f'Exception {e}')
 
 
 with concurrent.futures.ProcessPoolExecutor() as executor:
